@@ -1,0 +1,38 @@
+test:
+  name: Patient Registration and EHR Creation Test
+  description: Register patients and create EHRs for NIDs 5000000101 to 5000000150
+  workers:
+    type: local
+    number: 5
+  rounds:
+    - label: patient-registration
+      description: Register patients with NIDs 5000000101 to 5000000150
+      txNumber: 150  # Exactly 50 patients
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 10  # 10 transactions per second
+      workload:
+        module: workload/patientRegistrationWorkload.js
+        arguments:
+          assets: 50
+    - label: ehr-creation
+      description: Create EHRs for patients with NIDs 5000000101 to 5000000150
+      txNumber: 150  # Exactly 50 EHRs
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 10
+      workload:
+        module: workload/ehrWorkload.js
+        arguments:
+          assets: 50
+
+monitors:
+  resource:
+    - module: docker
+      options:
+        interval: 1
+        containers:
+          - peer0.org1.example.com
+          - orderer.example.com

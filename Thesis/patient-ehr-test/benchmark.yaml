@@ -1,0 +1,27 @@
+test:
+  name: EHR Creation Test
+  description: Test EHR creation for 50 patients
+  workers:
+    type: local
+    number: 5
+  rounds:
+    - label: ehr-creation
+      description: Create EHRs for patients with NIDs 5000000001 to 5000000050
+      txNumber: 50  # Exactly 50 transactions
+      rateControl:
+        type: fixed-rate
+        opts:
+          tps: 10  # 10 transactions per second
+      workload:
+        module: workload/invoke.js
+        arguments:
+          assets: 50  # Target 50 EHRs
+
+monitors:
+  resource:
+    - module: docker
+      options:
+        interval: 1
+        containers:
+          - peer0.org1.example.com
+          - orderer.example.com
