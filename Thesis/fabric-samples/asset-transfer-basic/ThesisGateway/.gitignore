@@ -10,8 +10,7 @@ coverage
 node_modules/
 jspm_packages/
 
-fingerprints_raw/
-virtual/
+
 
 # Node.js
 node_modules/

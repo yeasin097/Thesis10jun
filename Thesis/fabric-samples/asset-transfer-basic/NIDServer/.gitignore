@@ -11,12 +11,12 @@ coverage
 # Dependency directories
 node_modules/
 jspm_packages/
-fingerprints_raw/
+
 
 package-lock.json
 
-fingerprints_raw/
-nidserver/
+
+virtual/
 
 venv/
 __pycache__/
