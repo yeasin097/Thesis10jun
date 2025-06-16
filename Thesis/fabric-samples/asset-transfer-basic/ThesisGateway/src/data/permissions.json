@@ -1,0 +1,31 @@
+{
+  "permissions": [
+    {
+      "patient_nid": "5000000001",
+      "doctor_id": "d0001",
+      "permission_given": true,
+      "request_date": "2025-06-15T17:44:38.329Z",
+      "updated_date": "2025-06-15T17:44:49.528Z"
+    },
+    {
+      "patient_nid": "5000000002",
+      "doctor_id": "d0001",
+      "permission_given": true,
+      "request_date": "2025-06-15T17:51:01.856Z",
+      "updated_date": "2025-06-15T17:53:28.799Z"
+    },
+    {
+      "patient_nid": "5000000003",
+      "doctor_id": "d0001",
+      "permission_given": true,
+      "request_date": "2025-06-15T17:54:03.774Z",
+      "updated_date": "2025-06-15T17:54:27.913Z"
+    },
+    {
+      "patient_nid": "5000000004",
+      "doctor_id": "d0001",
+      "permission_given": false,
+      "request_date": "2025-06-15T18:06:27.867Z"
+    }
+  ]
+}

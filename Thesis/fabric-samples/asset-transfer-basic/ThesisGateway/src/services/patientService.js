@@ -4,8 +4,10 @@ import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'node:fs';
 import { getHash } from '../utils/hash.js';
+import path from 'path';
 
 const PYTHON_SERVER_URL = 'http://localhost:15000';
+const PERMISSIONS_FILE = path.join(process.cwd(), 'src', 'data', 'permissions.json');
 
 export async function registerPatientFromBiometric(filePath, filename, register) {
     try {
@@ -198,5 +200,127 @@ export const deletePatient = async (nid) => {
     } catch (error) {
         console.error('Error deleting patient:', error);
         throw error;
+    }
+};
+
+// Permission related functions
+export const requestPermission = async (req, res) => {
+    try {
+        const { patient_nid, doctor_id } = req.body;
+        
+        if (!patient_nid || !doctor_id) {
+            return res.status(400).json({ error: 'Patient NID and doctor ID are required' });
+        }
+
+        // Read current permissions
+        let permissions = { permissions: [] };
+        try {
+            const data = fs.readFileSync(PERMISSIONS_FILE, 'utf8');
+            permissions = JSON.parse(data);
+        } catch (error) {
+            // If file doesn't exist or is empty, start with empty permissions
+            fs.writeFileSync(PERMISSIONS_FILE, JSON.stringify(permissions, null, 2));
+        }
+
+        // Check if permission request already exists
+        const existingRequest = permissions.permissions.find(
+            p => p.patient_nid === patient_nid && p.doctor_id === doctor_id
+        );
+
+        if (existingRequest) {
+            return res.status(400).json({ error: 'Permission request already exists' });
+        }
+
+        // Add new permission request
+        permissions.permissions.push({
+            patient_nid,
+            doctor_id,
+            permission_given: false,
+            request_date: new Date().toISOString()
+        });
+
+        // Save updated permissions
+        fs.writeFileSync(PERMISSIONS_FILE, JSON.stringify(permissions, null, 2));
+
+        return res.status(200).json({ message: 'Permission request created successfully' });
+    } catch (error) {
+        console.error('Error requesting permission:', error);
+        return res.status(500).json({ error: 'Failed to request permission' });
+    }
+};
+
+export const checkPermissionRequests = async (req, res) => {
+    try {
+        const { patient_nid } = req.params;
+
+        if (!patient_nid) {
+            return res.status(400).json({ error: 'Patient NID is required' });
+        }
+
+        // Read permissions file
+        let permissions = { permissions: [] };
+        try {
+            const data = fs.readFileSync(PERMISSIONS_FILE, 'utf8');
+            permissions = JSON.parse(data);
+        } catch (error) {
+            return res.status(200).json({ permissions: [] });
+        }
+
+        // Filter permissions for this patient
+        const patientPermissions = permissions.permissions.filter(
+            p => p.patient_nid === patient_nid
+        );
+
+        return res.status(200).json({ permissions: patientPermissions });
+    } catch (error) {
+        console.error('Error checking permission requests:', error);
+        return res.status(500).json({ error: 'Failed to check permission requests' });
+    }
+};
+
+export const updatePermission = async (req, res) => {
+    try {
+        const { patient_nid, doctor_id, permission_given } = req.body;
+
+        if (!patient_nid || !doctor_id || permission_given === undefined) {
+            return res.status(400).json({ error: 'Patient NID, doctor ID, and permission status are required' });
+        }
+
+        // Read current permissions
+        let permissions = { permissions: [] };
+        try {
+            const data = fs.readFileSync(PERMISSIONS_FILE, 'utf8');
+            permissions = JSON.parse(data);
+        } catch (error) {
+            return res.status(404).json({ error: 'No permissions found' });
+        }
+
+        // Find the permission request
+        const permissionIndex = permissions.permissions.findIndex(
+            p => p.patient_nid === patient_nid && p.doctor_id === doctor_id
+        );
+
+        if (permissionIndex === -1) {
+            return res.status(404).json({ error: 'Permission request not found' });
+        }
+
+        if (permission_given) {
+            // If permission is granted, update the status and add updated_date
+            permissions.permissions[permissionIndex].permission_given = true;
+            permissions.permissions[permissionIndex].updated_date = new Date().toISOString();
+        } else {
+            // If permission is rejected or revoked, remove the request from the array
+            permissions.permissions.splice(permissionIndex, 1);
+        }
+
+        // Save updated permissions
+        fs.writeFileSync(PERMISSIONS_FILE, JSON.stringify(permissions, null, 2));
+
+        return res.status(200).json({ 
+            message: permission_given ? 'Permission granted successfully' : 'Permission request removed successfully'
+        });
+    } catch (error) {
+        console.error('Error updating permission:', error);
+        return res.status(500).json({ error: 'Failed to update permission' });
     }
 }; 

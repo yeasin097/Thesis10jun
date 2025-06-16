@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home';
 import PatientHome from './pages/PatientHome';
 import PatientLogin from './pages/PatientLogin';
@@ -12,6 +14,18 @@ import DoctorEhrView from './components/DoctorEhrView'
 function App() {
   return (
     <div className="min-vh-100">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/patient/home" element={<PatientHome />} />

@@ -1,0 +1,15 @@
+Sat Jun 14 21:18:00 2025: IDOR Vulnerability Check - Success: False, Message: IDOR prevented. Status: 404, Message: Patient not found via NID
+Sat Jun 14 21:18:02 2025: Unauthorized Network Join Attempt - Success: False, Message: Unauthorized join prevented. Status: 400, Message: No fingerprint image or NID number provided
+Sat Jun 14 21:18:04 2025: Malicious Ordering Simulation - Success: False, Message: Failed to submit initial EHR. Status: 404
+Sat Jun 14 21:18:06 2025: Replay Attack Testing - Success: False, Message: Failed to submit initial EHR. Status: 404
+Sat Jun 14 21:18:13 2025: DoS Attack Simulation - Success: False, Message: DoS simulation failed. Errors: 0, Successes: 1000
+Sat Jun 14 21:21:30 2025: IDOR Vulnerability Check - Success: False, Message: IDOR prevented. Status: 404, Message: Patient not found via NID
+Sat Jun 14 21:21:32 2025: Unauthorized Network Join Attempt - Success: False, Message: Unauthorized join prevented. Status: 400, Message: No fingerprint image or NID number provided
+Sat Jun 14 21:21:36 2025: Malicious Ordering Simulation - Success: True, Message: Malicious ordering succeeded! Response: {"error":"Doctor with ID d12345 does not exist."}
+Sat Jun 14 21:21:38 2025: Replay Attack Testing - Success: False, Message: Failed to submit initial EHR. Status: 404
+Sat Jun 14 21:21:44 2025: DoS Attack Simulation - Success: False, Message: DoS simulation failed. Errors: 0, Successes: 1000
+Sat Jun 14 21:22:32 2025: IDOR Vulnerability Check - Success: False, Message: IDOR prevented. Status: 404, Message: Patient not found via NID
+Sat Jun 14 21:22:37 2025: Unauthorized Network Join Attempt - Success: False, Message: Unauthorized join prevented. Status: 400, Message: No fingerprint image or NID number provided
+Sat Jun 14 21:22:41 2025: Malicious Ordering Simulation - Success: False, Message: Malicious ordering detected and prevented. Status: {"error":"Doctor with ID d12345 does not exist."}
+Sat Jun 14 21:22:43 2025: Replay Attack Testing - Success: False, Message: Failed to submit initial EHR. Status: 404
+Sat Jun 14 21:22:49 2025: DoS Attack Simulation - Success: False, Message: DoS simulation failed. Errors: 0, Successes: 1000

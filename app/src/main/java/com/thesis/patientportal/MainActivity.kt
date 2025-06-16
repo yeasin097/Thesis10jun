@@ -9,9 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.thesis.patientportal.data.PatientInfo
 import com.thesis.patientportal.screens.*
 import com.thesis.patientportal.ui.theme.PatientPortalTheme
@@ -86,6 +88,41 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("login_type") {
                                         popUpTo("patient_home") { inclusive = true }
                                     }
+                                },
+                                onSearchDoctor = {
+                                    navController.navigate("doctor_search")
+                                },
+                                onViewEhrs = {
+                                    navController.navigate("ehr_screen")
+                                },
+                                onViewPermissions = {
+                                    navController.navigate("permissions_screen")
+                                }
+                            )
+                        }
+                        composable("doctor_search") {
+                            DoctorSearchScreen(
+                                onBack = {
+                                    navController.navigateUp()
+                                }
+                            )
+                        }
+                        composable("ehr_screen") {
+                            EhrScreen(
+                                patientNid = loggedInPatient?.nid_no ?: "",
+                                onBack = {
+                                    navController.navigateUp()
+                                },
+                                onDownloadPdf = { ehr ->
+                                    // Handle PDF download
+                                }
+                            )
+                        }
+                        composable("permissions_screen") {
+                            PermissionsScreen(
+                                patientNid = loggedInPatient?.nid_no ?: "",
+                                onBack = {
+                                    navController.navigateUp()
                                 }
                             )
                         }

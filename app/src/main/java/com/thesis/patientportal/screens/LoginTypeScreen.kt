@@ -25,15 +25,18 @@ fun LoginTypeScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = onNidLoginSelected,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .padding(bottom = 16.dp)
         ) {
             Text("Login with NID")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = onBiometricLoginSelected,

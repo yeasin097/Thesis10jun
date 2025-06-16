@@ -13,7 +13,7 @@ class DoctorContract extends Contract {
     }
 
     // CreateDoctor issues a new doctor to the world state with given details.
-    async CreateDoctor(ctx, bmdcNo, name) {
+    async CreateDoctor(ctx, bmdcNo, name, speciality, hospital, address) {
         const doctorID = "d"+bmdcNo;
         const exists = await this.DoctorExists(ctx, doctorID);
         if (exists) {
@@ -23,6 +23,9 @@ class DoctorContract extends Contract {
         const doctor = {
             doctorName: name,
             doctorID: doctorID,
+            speciality: speciality,
+            hospital: hospital,
+            address: address
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(doctorID, Buffer.from(stringify(sortKeysRecursive(doctor))));

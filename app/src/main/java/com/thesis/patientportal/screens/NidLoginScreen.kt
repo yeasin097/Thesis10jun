@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.thesis.patientportal.api.NetworkModule
 import com.thesis.patientportal.data.PatientInfo
@@ -20,6 +21,7 @@ fun NidLoginScreen(
     onBack: () -> Unit
 ) {
     var nid by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -44,9 +46,21 @@ fun NidLoginScreen(
             label = { Text("NID Number") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = 16.dp),
             singleLine = true,
             enabled = !isLoading
+        )
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            singleLine = true,
+            enabled = !isLoading,
+            visualTransformation = PasswordVisualTransformation()
         )
 
         if (error != null) {
@@ -73,38 +87,43 @@ fun NidLoginScreen(
 
             Button(
                 onClick = {
-                    if (nid.isNotBlank()) {
-                        scope.launch {
-                            try {
-                                isLoading = true
-                                error = null
-                                Log.d("NidLoginScreen", "Making API call with NID: $nid")
-                                val response = NetworkModule.apiService.loginWithNid(
-                                    mapOf("nid_no" to nid)
-                                )
-                                Log.d("NidLoginScreen", "API response received: ${response.code()}")
-                                if (response.isSuccessful) {
-                                    response.body()?.getPatientInfo()?.let { patientInfo ->
-                                        Log.d("NidLoginScreen", "Login successful for NID: ${patientInfo.nid_no}")
-                                        onLoginSuccess(patientInfo)
-                                    } ?: run {
-                                        Log.e("NidLoginScreen", "Invalid response body")
-                                        error = "Invalid response from server"
-                                    }
-                                } else {
-                                    val errorBody = response.errorBody()?.string()
-                                    Log.e("NidLoginScreen", "Login failed: $errorBody")
-                                    error = errorBody ?: "Login failed"
-                                }
-                            } catch (e: Exception) {
-                                Log.e("NidLoginScreen", "Exception during login", e)
-                                error = e.message ?: "An error occurred"
-                            } finally {
-                                isLoading = false
-                            }
-                        }
-                    } else {
+                    if (nid.isBlank()) {
                         error = "Please enter NID number"
+                        return@Button
+                    }
+                    if (password != "123") {
+                        error = "Invalid password"
+                        return@Button
+                    }
+                    
+                    scope.launch {
+                        try {
+                            isLoading = true
+                            error = null
+                            Log.d("NidLoginScreen", "Making API call with NID: $nid")
+                            val response = NetworkModule.apiService.loginWithNid(
+                                mapOf("nid_no" to nid)
+                            )
+                            Log.d("NidLoginScreen", "API response received: ${response.code()}")
+                            if (response.isSuccessful) {
+                                response.body()?.getPatientInfo()?.let { patientInfo ->
+                                    Log.d("NidLoginScreen", "Login successful for NID: ${patientInfo.nid_no}")
+                                    onLoginSuccess(patientInfo)
+                                } ?: run {
+                                    Log.e("NidLoginScreen", "Invalid response body")
+                                    error = "Invalid response from server"
+                                }
+                            } else {
+                                val errorBody = response.errorBody()?.string()
+                                Log.e("NidLoginScreen", "Login failed: $errorBody")
+                                error = errorBody ?: "Login failed"
+                            }
+                        } catch (e: Exception) {
+                            Log.e("NidLoginScreen", "Exception during login", e)
+                            error = e.message ?: "An error occurred"
+                        } finally {
+                            isLoading = false
+                        }
                     }
                 },
                 modifier = Modifier

@@ -47,4 +47,17 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.get('/speciality/:speciality', async (req, res) => {
+    try {
+        const { speciality } = req.params;
+        const result = await getAllFromContract('GetAll', 'doctor');
+        console.log(result);
+        const filteredDoctors = result.filter(doctor => doctor.speciality.toLowerCase() === speciality.toLowerCase());
+        console.log(filteredDoctors);
+        res.json(filteredDoctors);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 export default router; 

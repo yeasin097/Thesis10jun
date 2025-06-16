@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function PatientHome() {
   const location = useLocation();
@@ -8,36 +9,81 @@ function PatientHome() {
   const [ehrData, setEhrData] = useState([]);
   const [loadingEhrs, setLoadingEhrs] = useState(false);
   const [errorEhrs, setErrorEhrs] = useState(null);
+  const [permissionRequests, setPermissionRequests] = useState([]);
+  const [loadingPermissions, setLoadingPermissions] = useState(false);
 
   useEffect(() => {
     if (patient) {
-      const fetchEhrs = async () => {
-        setLoadingEhrs(true);
-        console.log('Fetching EHRs for NID:', patient.nid_no);
-        try {
-          const response = await axios.post('http://localhost:8000/patient/ehrs', { nid_no: patient.nid_no }, {
-            headers: { 'Content-Type': 'application/json' },
-          });
-          console.log('Response:', response.data);
-          const ehrs = Array.isArray(response.data.ehrs) ? response.data.ehrs : [];
-          // Normalize details: parse if string, keep as object if already parsed
-          const normalizedEhrs = ehrs.map(ehr => ({
-            ...ehr,
-            details: typeof ehr.details === 'string' ? JSON.parse(ehr.details) : ehr.details
-          }));
-          setEhrData(normalizedEhrs);
-          setErrorEhrs(null);
-        } catch (err) {
-          console.error('Fetch error:', err.response?.status, err.response?.data);
-          setErrorEhrs(err.response?.data?.error || 'Failed to fetch EHRs.');
-          setEhrData([]);
-        } finally {
-          setLoadingEhrs(false);
-        }
-      };
       fetchEhrs();
+      fetchPermissionRequests();
     }
   }, [patient]);
+
+  const fetchPermissionRequests = async () => {
+    if (!patient) return;
+    
+    setLoadingPermissions(true);
+    try {
+      const response = await axios.get(`http://localhost:8000/patient/permission/requests/${patient.nid_no}`);
+      setPermissionRequests(response.data.permissions.filter(p => !p.permission_given));
+    } catch (error) {
+      console.error('Error fetching permission requests:', error);
+    } finally {
+      setLoadingPermissions(false);
+    }
+  };
+
+  const handlePermissionResponse = async (doctorId, accept) => {
+    try {
+      await axios.post('http://localhost:8000/patient/permission/update', {
+        patient_nid: patient.nid_no,
+        doctor_id: doctorId,
+        permission_given: accept
+      });
+
+      toast.success(`Permission ${accept ? 'granted' : 'denied'} successfully`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      // Refresh permission requests
+      fetchPermissionRequests();
+    } catch (error) {
+      toast.error('Failed to update permission', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
+  const fetchEhrs = async () => {
+    setLoadingEhrs(true);
+    try {
+      const response = await axios.post('http://localhost:8000/patient/ehrs', { nid_no: patient.nid_no }, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const ehrs = Array.isArray(response.data.ehrs) ? response.data.ehrs : [];
+      const normalizedEhrs = ehrs.map(ehr => ({
+        ...ehr,
+        details: typeof ehr.details === 'string' ? JSON.parse(ehr.details) : ehr.details
+      }));
+      setEhrData(normalizedEhrs);
+      setErrorEhrs(null);
+    } catch (err) {
+      setErrorEhrs(err.response?.data?.error || 'Failed to fetch EHRs.');
+      setEhrData([]);
+    } finally {
+      setLoadingEhrs(false);
+    }
+  };
 
   if (!patient) {
     return (
@@ -52,6 +98,47 @@ function PatientHome() {
   return (
     <div className="container py-5">
       <h2 className="text-center mb-4">Welcome, {patient.name}</h2>
+      
+      {/* Permission Requests Section */}
+      {permissionRequests.length > 0 && (
+        <div className="row justify-content-center mb-4">
+          <div className="col-md-8">
+            <div className="card shadow-sm">
+              <div className="card-header bg-warning text-dark">
+                <h5 className="mb-0">Pending Permission Requests</h5>
+              </div>
+              <div className="card-body">
+                {permissionRequests.map((request, index) => (
+                  <div key={index} className="d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                    <div>
+                      <p className="mb-1"><strong>Doctor ID:</strong> {request.doctor_id}</p>
+                      <p className="mb-0 text-muted small">
+                        Requested on: {new Date(request.request_date).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <button
+                        className="btn btn-success btn-sm me-2"
+                        onClick={() => handlePermissionResponse(request.doctor_id, true)}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handlePermissionResponse(request.doctor_id, false)}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Patient Information Card */}
       <div className="row justify-content-center">
         <div className="col-md-8">
           <div className="card shadow-sm mb-4">

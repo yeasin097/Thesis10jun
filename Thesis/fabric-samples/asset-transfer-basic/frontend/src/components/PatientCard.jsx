@@ -1,16 +1,95 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function PatientCard({ patient }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
+  const [hasPermission, setHasPermission] = useState(false);
 
-  const handleCreateEhr = () => {
-    navigate('/doctor/create-ehr', { state: { patient } });
+  const checkPermission = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/patient/permission/requests/${patient.nid_no}`);
+      const permissions = response.data.permissions;
+      const doctorPermission = permissions.find(p => p.doctor_id === 'd0001' && p.permission_given);
+      setHasPermission(!!doctorPermission);
+      return !!doctorPermission;
+    } catch (error) {
+      console.error('Error checking permission:', error);
+      return false;
+    }
   };
 
-  const handleShowEhrs = () => {
-    navigate('/doctor/patient-ehrs', { state: { patient } });
+  const requestPermission = async () => {
+    try {
+      await axios.post('http://localhost:8000/patient/permission/request', {
+        patient_nid: patient.nid_no,
+        doctor_id: 'd0001'
+      });
+      toast.success('Permission request sent to patient', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      if (error.response?.status === 400 && error.response?.data?.error === 'Permission request already exists') {
+        toast.info('Permission request already sent', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        toast.error('Failed to send permission request', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }
+  };
+
+  const handleCreateEhr = async () => {
+    const hasPermission = await checkPermission();
+    if (!hasPermission) {
+      toast.info('Permission needed to create EHR. Sending request...', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      await requestPermission();
+    } else {
+      navigate('/doctor/create-ehr', { state: { patient } });
+    }
+  };
+
+  const handleShowEhrs = async () => {
+    const hasPermission = await checkPermission();
+    if (!hasPermission) {
+      toast.info('Permission needed to view EHRs. Sending request...', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      await requestPermission();
+    } else {
+      navigate('/doctor/patient-ehrs', { state: { patient } });
+    }
   };
 
   return (
