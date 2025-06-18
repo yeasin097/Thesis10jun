@@ -42,58 +42,103 @@ function PatientList() {
 
   if (loading) {
     return (
-      <div className="min-vh-100 d-flex align-items-center justify-content-center">
-        <div className="spinner-border text-success" role="status" style={{ width: '3rem', height: '3rem' }}></div>
-        <span className="ms-3 text-success fs-3">Loading...</span>
+      <div className="d-flex align-items-center justify-content-center py-5">
+        <div className="card border-0 shadow-lg" style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '20px'
+        }}>
+          <div className="card-body p-4 text-center">
+            <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}></div>
+            <span className="ms-3 text-primary fs-5">Loading patients...</span>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-vh-100 d-flex align-items-center justify-content-center text-danger fs-3">
-        {error}
+      <div className="d-flex align-items-center justify-content-center py-5">
+        <div className="card border-0 shadow-lg" style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '20px'
+        }}>
+          <div className="card-body p-4 text-center">
+            <i className="bi bi-exclamation-triangle text-danger" style={{ fontSize: '2rem' }}></i>
+            <span className="ms-3 text-danger fs-5">{error}</span>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-vh-100 py-5"
-      style={{ background: 'linear-gradient(135deg, #f8f9fa, #d4edda)', paddingTop: '80px' }}
-    >
+    <div className="py-4" style={{ background: 'transparent' }}>
       <div className="container">
-        <h2
-          className="display-4 text-success fw-bold text-center mb-5"
-          style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}
-        >
-          Patient List
-        </h2>
-        <div className="mb-5 position-relative w-75 mx-auto">
-          <input
-            type="text"
-            className="form-control form-control-lg rounded-pill ps-5 shadow-sm"
-            placeholder="Search by name or NID (exact match)"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ border: '2px solid #28a745', fontSize: '1.1rem' }}
-          />
-          <i
-            className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-4 text-success"
-            style={{ fontSize: '1.2rem' }}
-          ></i>
+        <div className="text-center mb-5">
+          <h2 className="h3 text-primary fw-bold mb-4">
+            <i className="bi bi-people me-2"></i>
+            Patient Search
+          </h2>
+          <div className="row justify-content-center">
+            <div className="col-md-8 col-lg-6">
+              <div className="position-relative">
+                <input
+                  type="text"
+                  className="form-control form-control-lg rounded-pill ps-5 shadow-sm"
+                  placeholder="Search by name or NID (exact match)"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ 
+                    border: '2px solid #007bff',
+                    fontSize: '1.1rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                />
+                <i
+                  className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-4 text-primary"
+                  style={{ fontSize: '1.2rem' }}
+                ></i>
+              </div>
+            </div>
+          </div>
         </div>
+        
         {filteredPatients.length === 0 && searchTerm.trim() !== '' && (
-          <div className="text-center text-muted fs-4">
-            No patients found for "{searchTerm}".
+          <div className="text-center">
+            <div className="card border-0 shadow-lg d-inline-block" style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '15px'
+            }}>
+              <div className="card-body px-4 py-3">
+                <p className="text-muted mb-0 fs-5">No patients found for "{searchTerm}".</p>
+              </div>
+            </div>
           </div>
         )}
+        
         {filteredPatients.length === 0 && searchTerm.trim() === '' && (
-          <div className="text-center text-muted fs-4">
-            Please enter a name or NID to search.
+          <div className="text-center">
+            <div className="card border-0 shadow-lg d-inline-block" style={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '15px'
+            }}>
+              <div className="card-body px-4 py-3">
+                <p className="text-muted mb-0 fs-5">
+                  <i className="bi bi-search me-2"></i>
+                  Please enter a name or NID to search.
+                </p>
+              </div>
+            </div>
           </div>
         )}
-        <div className="row g-3">
+        
+        <div className="row g-4">
           {filteredPatients.map((patient, index) => (
             <PatientCard key={index} patient={patient} />
           ))}

@@ -177,8 +177,8 @@ function PatientHome() {
             )}
             {!loadingEhrs && !errorEhrs && ehrData.length > 0 && ehrData.map((ehr, index) => (
               <div key={index} className="card mb-3 shadow-sm">
-                <div className="card-header bg-info text-white">
-                  <strong>EHR ID:</strong> {ehr.ehr_id}
+                <div className="card-header bg-info">
+                  <strong>Date of Visit:</strong> {ehr.details?.visit_date}
                 </div>
                 <div className="card-body">
                   <div className="row">

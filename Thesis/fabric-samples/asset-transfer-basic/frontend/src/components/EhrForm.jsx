@@ -24,9 +24,9 @@ function EhrForm({ doctorId, hospitalId, nidNo, patient }) {
     'Chronic Obstructive Pulmonary Disease (COPD)', 'Pneumonia', 'Bronchitis', 'Malaria', 'Dengue Fever',
     'Hepatitis A', 'Hepatitis B', 'Hepatitis C', 'Cirrhosis', 'Gastritis',
     'Peptic Ulcer Disease', 'Appendicitis', 'Cholecystitis', 'Pancreatitis', 'Irritable Bowel Syndrome (IBS)',
-    'Crohn’s Disease', 'Ulcerative Colitis', 'Arthritis', 'Osteoporosis', 'Rheumatoid Arthritis',
-    'Gout', 'Migraine', 'Epilepsy', 'Stroke', 'Parkinson’s Disease',
-    'Alzheimer’s Disease', 'Depression', 'Anxiety Disorder', 'Bipolar Disorder', 'Schizophrenia',
+    'Crohn\'s Disease', 'Ulcerative Colitis', 'Arthritis', 'Osteoporosis', 'Rheumatoid Arthritis',
+    'Gout', 'Migraine', 'Epilepsy', 'Stroke', 'Parkinson\'s Disease',
+    'Alzheimer\'s Disease', 'Depression', 'Anxiety Disorder', 'Bipolar Disorder', 'Schizophrenia',
     'Coronary Artery Disease', 'Heart Failure', 'Arrhythmia', 'Myocardial Infarction', 'Anemia',
     'Leukemia', 'Lymphoma', 'Thyroiditis', 'Hyperthyroidism', 'Hypothyroidism',
     'Kidney Stones', 'Chronic Kidney Disease', 'Urinary Tract Infection (UTI)', 'Prostatitis', 'Erectile Dysfunction',
@@ -192,48 +192,57 @@ function EhrForm({ doctorId, hospitalId, nidNo, patient }) {
           </div>
           <div className="card-body p-5">
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="form-label fw-medium text-muted"><i className="bi bi-person-fill me-2 text-teal"></i>Doctor ID</label>
-                <input
-                  type="text"
-                  className="form-control border-0 bg-light py-3 rounded-3"
-                  value={doctorId}
-                  disabled
-                  style={{ fontSize: '1.1rem' }}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="form-label fw-medium text-muted"><i className="bi bi-hospital-fill me-2 text-teal"></i>Hospital ID</label>
-                <input
-                  type="text"
-                  className="form-control border-0 bg-light py-3 rounded-3"
-                  value={hospitalId}
-                  disabled
-                  style={{ fontSize: '1.1rem' }}
-                />
-              </div>
-              {nidNo && (
-                <div className="mb-4">
-                  <label className="form-label fw-medium text-muted"><i className="bi bi-fingerprint me-2 text-teal"></i>NID Number</label>
+              {/* First row: Doctor ID and Hospital ID */}
+              <div className="row mb-4">
+                <div className="col-md-6">
+                  <label className="form-label fw-medium text-muted"><i className="bi bi-person-fill me-2 text-teal"></i>Doctor ID</label>
                   <input
                     type="text"
                     className="form-control border-0 bg-light py-3 rounded-3"
-                    value={nidNo}
+                    value={doctorId}
                     disabled
                     style={{ fontSize: '1.1rem' }}
                   />
                 </div>
-              )}
-              <div className="mb-4">
-                <label className="form-label fw-medium text-muted"><i className="bi bi-calendar-fill me-2 text-teal"></i>Visit Date</label>
-                <input
-                  type="text"
-                  className="form-control border-0 bg-light py-3 rounded-3"
-                  value={currentDate}
-                  disabled
-                  style={{ fontSize: '1.1rem' }}
-                />
+                <div className="col-md-6">
+                  <label className="form-label fw-medium text-muted"><i className="bi bi-hospital-fill me-2 text-teal"></i>Hospital ID</label>
+                  <input
+                    type="text"
+                    className="form-control border-0 bg-light py-3 rounded-3"
+                    value={hospitalId}
+                    disabled
+                    style={{ fontSize: '1.1rem' }}
+                  />
+                </div>
               </div>
+
+              {/* Second row: NID Number and Visit Date */}
+              <div className="row mb-4">
+                {nidNo && (
+                  <div className="col-md-6">
+                    <label className="form-label fw-medium text-muted"><i className="bi bi-fingerprint me-2 text-teal"></i>NID Number</label>
+                    <input
+                      type="text"
+                      className="form-control border-0 bg-light py-3 rounded-3"
+                      value={nidNo}
+                      disabled
+                      style={{ fontSize: '1.1rem' }}
+                    />
+                  </div>
+                )}
+                <div className={nidNo ? "col-md-6" : "col-md-12"}>
+                  <label className="form-label fw-medium text-muted"><i className="bi bi-calendar-fill me-2 text-teal"></i>Visit Date</label>
+                  <input
+                    type="text"
+                    className="form-control border-0 bg-light py-3 rounded-3"
+                    value={currentDate}
+                    disabled
+                    style={{ fontSize: '1.1rem' }}
+                  />
+                </div>
+              </div>
+
+              {/* Diagnoses - Full width */}
               <div className="mb-4">
                 <label className="form-label fw-medium text-muted"><i className="bi bi-clipboard-fill me-2 text-teal"></i>Diagnoses</label>
                 <select
@@ -261,6 +270,8 @@ function EhrForm({ doctorId, hospitalId, nidNo, patient }) {
                   </div>
                 )}
               </div>
+
+              {/* Medications - Full width */}
               <div className="mb-4">
                 <label className="form-label fw-medium text-muted"><i className="bi bi-capsule me-2 text-teal"></i>Medications</label>
                 <select
@@ -297,36 +308,50 @@ function EhrForm({ doctorId, hospitalId, nidNo, patient }) {
                   </div>
                 )}
               </div>
+
+              {/* Test Results - Two fields per row */}
               <div className="mb-4">
                 <label className="form-label fw-medium text-muted"><i className="bi bi-heart-pulse-fill me-2 text-teal"></i>Test Results</label>
-                <input
-                  type="text"
-                  className="form-control border-0 border-bottom py-3 mb-3"
-                  name="test_results.blood_pressure"
-                  value={formData.test_results.blood_pressure}
-                  onChange={handleInputChange}
-                  placeholder="Blood Pressure (e.g., 135/90)"
-                  style={{ fontSize: '1.1rem' }}
-                />
-                <input
-                  type="text"
-                  className="form-control border-0 border-bottom py-3 mb-3"
-                  name="test_results.allergy"
-                  value={formData.test_results.allergy}
-                  onChange={handleInputChange}
-                  placeholder="Allergy (e.g., Shellfish)"
-                  style={{ fontSize: '1.1rem' }}
-                />
-                <input
-                  type="text"
-                  className="form-control border-0 border-bottom py-3"
-                  name="test_results.cholesterol"
-                  value={formData.test_results.cholesterol}
-                  onChange={handleInputChange}
-                  placeholder="Cholesterol (e.g., 250 mg/dL)"
-                  style={{ fontSize: '1.1rem' }}
-                />
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <input
+                      type="text"
+                      className="form-control border-0 border-bottom py-3"
+                      name="test_results.blood_pressure"
+                      value={formData.test_results.blood_pressure}
+                      onChange={handleInputChange}
+                      placeholder="Blood Pressure (e.g., 135/90)"
+                      style={{ fontSize: '1.1rem' }}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <input
+                      type="text"
+                      className="form-control border-0 border-bottom py-3"
+                      name="test_results.allergy"
+                      value={formData.test_results.allergy}
+                      onChange={handleInputChange}
+                      placeholder="Allergy (e.g., Shellfish)"
+                      style={{ fontSize: '1.1rem' }}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <input
+                      type="text"
+                      className="form-control border-0 border-bottom py-3"
+                      name="test_results.cholesterol"
+                      value={formData.test_results.cholesterol}
+                      onChange={handleInputChange}
+                      placeholder="Cholesterol (e.g., 250 mg/dL)"
+                      style={{ fontSize: '1.1rem' }}
+                    />
+                  </div>
+                </div>
               </div>
+
+              {/* Comments - Full width */}
               <div className="mb-4">
                 <label htmlFor="notes" className="form-label fw-medium text-muted"><i className="bi bi-chat-square-text-fill me-2 text-teal"></i>Comments</label>
                 <textarea
@@ -340,6 +365,8 @@ function EhrForm({ doctorId, hospitalId, nidNo, patient }) {
                   style={{ fontSize: '1.1rem', border: '1px solid #e9ecef' }}
                 />
               </div>
+
+              {/* Fingerprint - Full width (only if no NID) */}
               {!nidNo && (
                 <div className="mb-4">
                   <label htmlFor="fingerprint" className="form-label fw-medium text-muted"><i className="bi bi-fingerprint me-2 text-teal"></i>Fingerprint Image</label>
@@ -354,6 +381,7 @@ function EhrForm({ doctorId, hospitalId, nidNo, patient }) {
                   />
                 </div>
               )}
+
               <button
                 type="submit"
                 className="btn w-100 py-3 fw-semibold text-white"

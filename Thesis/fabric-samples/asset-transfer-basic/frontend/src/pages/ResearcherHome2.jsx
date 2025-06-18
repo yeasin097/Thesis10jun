@@ -599,11 +599,39 @@ function ResearcherHome() {
           <div className="card mb-4">
             <div className="card-header bg-primary text-white">
               <ul className="nav nav-tabs card-header-tabs">
-                <li className="nav-item"><button className={`nav-link ${activeTab === 'demographics' ? 'active' : 'text-white'}`} onClick={() => setActiveTab('demographics')}>Demographics</button></li>
-                <li className="nav-item"><button className={`nav-link ${activeTab === 'clinical' ? 'active' : 'text-white'}`} onClick={() => setActiveTab('clinical')}>Clinical Metrics</button></li>
-                <li className="nav-item"><button className={`nav-link ${activeTab === 'temporal' ? 'active' : 'text-white'}`} onClick={() => setActiveTab('temporal')}>Temporal Trends</button></li>
-                <li className="nav-item"><button className={`nav-link ${activeTab === 'correlations' ? 'active' : 'text-white'}`} onClick={() => setActiveTab('correlations')}>Correlations</button></li>
-              </ul>
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${activeTab === 'demographics' ? 'active' : 'text-danger'}`} // Changed here
+                        onClick={() => setActiveTab('demographics')}
+                    >
+                        Demographics
+                    </button>
+                </li>
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${activeTab === 'clinical' ? 'active' : 'text-danger'}`} // Changed here
+                        onClick={() => setActiveTab('clinical')}
+                    >
+                        Clinical Metrics
+                    </button>
+                </li>
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${activeTab === 'temporal' ? 'active' : 'text-danger'}`} // Changed here
+                        onClick={() => setActiveTab('temporal')}
+                    >
+                        Temporal Trends
+                    </button>
+                </li>
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${activeTab === 'correlations' ? 'active' : 'text-danger'}`} // Changed here
+                        onClick={() => setActiveTab('correlations')}
+                    >
+                        Correlations
+                    </button>
+                </li>
+            </ul>
             </div>
             <div className="card-body">
               {previewLoading ? (

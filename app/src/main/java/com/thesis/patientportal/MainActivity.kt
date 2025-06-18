@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.thesis.patientportal.data.NetworkConfig
 import com.thesis.patientportal.data.PatientInfo
 import com.thesis.patientportal.screens.*
 import com.thesis.patientportal.ui.theme.PatientPortalTheme
@@ -21,6 +22,10 @@ import com.thesis.patientportal.ui.theme.PatientPortalTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Initialize NetworkConfig
+        NetworkConfig.initialize(this)
+        
         enableEdgeToEdge()
         setContent {
             PatientPortalTheme {

@@ -10,6 +10,8 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,29 +48,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thesis.patientportal.api.NetworkModule
 import com.thesis.patientportal.data.EhrData
 import com.thesis.patientportal.data.PatientInfo
-import java.io.File
-import java.io.FileOutputStream
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,12 +97,12 @@ fun PatientHomeScreen(
         selectedImageUri = uri
         uri?.let {
             scope.launch {
-                isLoadingState = true // Set loading state when image picked
-                errorState = null // Clear previous error
+                isLoadingState = true
+                errorState = null
                 uploadFingerprint(it, context) { info, error ->
                     patientInfoState = info
                     errorState = error
-                    isLoadingState = false // Clear loading state
+                    isLoadingState = false
                 }
             }
         }
@@ -134,13 +132,13 @@ fun PatientHomeScreen(
     fun downloadEhrAsPdf(ehr: EhrData) {
         try {
             val pdfDocument = PdfDocument()
-            val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create() // A4 size
+            val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
             val page = pdfDocument.startPage(pageInfo)
             val canvas = page.canvas
             val paint = Paint().apply {
                 color = Color.BLACK
                 textSize = 12f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL) // Ensure normal typeface for content
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
             }
 
             var yPosition = 50f
@@ -234,7 +232,7 @@ fun PatientHomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Fingerprint login option
-            if (patientInfo == null && patientInfoState == null) { // Show only if not already logged in
+            if (patientInfo == null && patientInfoState == null) {
                 Button(
                     onClick = { imagePicker.launch("image/*") },
                     modifier = Modifier
@@ -259,7 +257,7 @@ fun PatientHomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         ActionButton(
@@ -444,7 +442,6 @@ private fun EhrCard(ehr: EhrData, onDownloadPdf: (EhrData) -> Unit) {
                 .fillMaxWidth()
                 .padding(24.dp)
         ) {
-            // Visit Date Header
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -464,7 +461,6 @@ private fun EhrCard(ehr: EhrData, onDownloadPdf: (EhrData) -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Content sections with improved styling
             SectionContent("Diagnosis", ehr.details?.diagnosis)
             SectionContent("Medications", ehr.details?.medications?.joinToString("\n"))
             SectionContent("Test Results", formatTestResults(ehr.details?.test_results))
@@ -472,7 +468,6 @@ private fun EhrCard(ehr: EhrData, onDownloadPdf: (EhrData) -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Download PDF Button with improved styling
             Button(
                 onClick = { onDownloadPdf(ehr) },
                 modifier = Modifier
@@ -615,7 +610,7 @@ private fun PermissionsContent() {
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
-            
+
             PermissionRequestItem(
                 "Dr. John Smith",
                 "City Hospital",
@@ -676,7 +671,7 @@ private fun PermissionRequestItem(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -737,7 +732,6 @@ private suspend fun uploadFingerprint(
         if (response.isSuccessful) {
             onComplete(response.body()?.getPatientInfo(), null)
         } else {
-            // Provide a more specific error message from the API if available
             val errorBody = response.errorBody()?.string()
             val errorMessage = if (!errorBody.isNullOrBlank()) {
                 "Failed to verify fingerprint: $errorBody"
@@ -761,8 +755,7 @@ private fun ActionButton(
 ) {
     Surface(
         modifier = Modifier
-            .size(110.dp)
-            .padding(4.dp)
+            .size(80.dp)
             .shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp)
@@ -776,27 +769,29 @@ private fun ActionButton(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(4.dp)
         ) {
             Text(
                 text = icon,
                 style = MaterialTheme.typography.headlineMedium,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
+                fontSize = 16.sp,
+                modifier = Modifier.padding(bottom = 2.dp)
             )
             Text(
                 text = textLine1,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.labelSmall,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 10.sp
             )
             Text(
                 text = textLine2,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.labelSmall,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 10.sp
             )
         }
     }

@@ -1,16 +1,43 @@
+/* Global background styles to ensure background image shows everywhere */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  background-image: url('assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa;
+  background-image: url('assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+html {
+  background-image: url('assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: transparent;
 }
 
 /* Remove any Bootstrap styles that might conflict */
@@ -27,6 +54,10 @@ html, body {
 /* Enhanced Bootstrap styles */
 .card {
   transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
 }
 
 .card.hover-shadow:hover {
@@ -156,4 +187,9 @@ html, body {
   .lead {
     font-size: 1.1rem;
   }
+}
+
+/* Override any Bootstrap background classes that might interfere */
+.bg-light, .bg-white, .bg-success, .bg-primary, .bg-secondary, .bg-info, .bg-warning, .bg-danger {
+  background-color: transparent !important;
 }

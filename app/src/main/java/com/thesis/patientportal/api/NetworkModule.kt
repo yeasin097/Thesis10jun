@@ -7,10 +7,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object NetworkModule {
-    // For Android Emulator, use 10.0.2.2 to access host machine's localhost
-    private const val BASE_URL = "http://172.22.205.76:8000/"  // Android Emulator
-    // For physical device, use your computer's IP address on the same network
-    // Example: "http://192.168.1.100:8000/"
+    private var baseUrl = "http://192.168.1.104:8000/"  // Default URL
+    private var retrofit: Retrofit? = null
+    private var _apiService: ApiService? = null
 
     private val loggingInterceptor = HttpLoggingInterceptor { message ->
         android.util.Log.d("NetworkModule", "Response: $message")
@@ -25,11 +24,26 @@ object NetworkModule {
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private fun createRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
-    val apiService: ApiService = retrofit.create(ApiService::class.java)
+    fun updateBaseUrl(newBaseUrl: String) {
+        baseUrl = newBaseUrl
+        retrofit = createRetrofit()
+        _apiService = retrofit?.create(ApiService::class.java)
+    }
+
+    val apiService: ApiService
+        get() {
+            if (_apiService == null) {
+                retrofit = createRetrofit()
+                _apiService = retrofit?.create(ApiService::class.java)
+            }
+            return _apiService!!
+        }
 } 

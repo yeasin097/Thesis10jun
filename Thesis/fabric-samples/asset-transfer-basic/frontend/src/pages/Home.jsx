@@ -48,7 +48,7 @@ function Home() {
                 <h5 className="card-title text-purple fw-semibold mb-3" style={{ color: '#6f42c1' }}>Research Portal</h5>
                 <button
                   className="btn w-100 py-2 fw-medium"
-                  onClick={() => navigate('/researcher')}
+                  onClick={() => navigate('/researcher2')}
                   style={{ backgroundColor: '#6f42c1', borderColor: '#6f42c1', color: '#fff', transition: 'all 0.3s' }}
                   onMouseEnter={e => e.target.style.backgroundColor = '#5a32a3'}
                   onMouseLeave={e => e.target.style.backgroundColor = '#6f42c1'}

@@ -3,20 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+// IMPORTANT: Ensure you have Bootstrap 5 and Bootstrap Icons linked in your project.
+// Example:
+// In public/index.html:
+// <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+// <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+// <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 function PatientCard({ patient }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
-  const [hasPermission, setHasPermission] = useState(false);
+  // State for permission is not strictly needed for rendering, but kept for clarity if you want to display it
+  // const [hasPermission, setHasPermission] = useState(false);
 
   const checkPermission = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/patient/permission/requests/${patient.nid_no}`);
       const permissions = response.data.permissions;
+      // Assuming 'd0001' is the current doctor's ID
       const doctorPermission = permissions.find(p => p.doctor_id === 'd0001' && p.permission_given);
-      setHasPermission(!!doctorPermission);
+      // setHasPermission(!!doctorPermission); // If you need to update a UI element based on this state
       return !!doctorPermission;
     } catch (error) {
       console.error('Error checking permission:', error);
+      toast.error('Failed to verify permissions.', {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return false;
     }
   };
@@ -25,7 +39,7 @@ function PatientCard({ patient }) {
     try {
       await axios.post('http://localhost:8000/patient/permission/request', {
         patient_nid: patient.nid_no,
-        doctor_id: 'd0001'
+        doctor_id: 'd0001' // Assuming 'd0001' is the current doctor's ID
       });
       toast.success('Permission request sent to patient', {
         position: "top-center",
@@ -46,6 +60,7 @@ function PatientCard({ patient }) {
           draggable: true,
         });
       } else {
+        console.error('Failed to send permission request:', error);
         toast.error('Failed to send permission request', {
           position: "top-center",
           autoClose: 3000,
@@ -59,8 +74,8 @@ function PatientCard({ patient }) {
   };
 
   const handleCreateEhr = async () => {
-    const hasPermission = await checkPermission();
-    if (!hasPermission) {
+    const permissionGranted = await checkPermission();
+    if (!permissionGranted) {
       toast.info('Permission needed to create EHR. Sending request...', {
         position: "top-center",
         autoClose: 3000,
@@ -76,8 +91,8 @@ function PatientCard({ patient }) {
   };
 
   const handleShowEhrs = async () => {
-    const hasPermission = await checkPermission();
-    if (!hasPermission) {
+    const permissionGranted = await checkPermission();
+    if (!permissionGranted) {
       toast.info('Permission needed to view EHRs. Sending request...', {
         position: "top-center",
         autoClose: 3000,
@@ -107,57 +122,56 @@ function PatientCard({ patient }) {
           onClick={() => setIsExpanded(!isExpanded)}
           style={{
             cursor: 'pointer',
-            padding: '15px 20px',
+            padding: '8px 15px',
             borderBottom: isExpanded ? '1px solid #e9ecef' : 'none',
           }}
         >
-          <h5 className="mb-0 text-primary fw-bold" style={{ fontSize: '1.2rem' }}>
-            {patient.name}
-          </h5>
-          <div className="d-flex align-items-center">
-            <span className="text-muted me-3" style={{ fontSize: '1rem' }}>
-              NID: {patient.nid_no}
-            </span>
-            <i
-              className={`bi ${isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'} text-success`}
-              style={{ fontSize: '1.2rem' }}
-            ></i>
+          <div>
+            <h5 className="mb-1 text-primary fw-bold" style={{ fontSize: '1.1rem' }}>
+              {patient.name}
+            </h5>
+            <div className="d-flex align-items-center">
+              <span className="text-muted me-3" style={{ fontSize: '0.9rem' }}>
+                NID: {patient.nid_no}
+              </span>
+              <span className="text-muted" style={{ fontSize: '0.9rem' }}>
+                Phone: {patient.phone || 'N/A'}
+              </span>
+            </div>
           </div>
+          <i
+            className={`bi ${isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'} text-success`}
+            style={{ fontSize: '1.1rem' }}
+          ></i>
         </div>
         {isExpanded && (
           <div
             className="card-body"
             style={{
-              padding: '20px',
-              minHeight: '250px',
+              padding: '15px 20px',
+              minHeight: '200px',
               backgroundColor: '#f9f9f9',
             }}
           >
-            <p className="mb-2" style={{ fontSize: '1rem', lineHeight: '1.6' }}>
+            <p className="mb-2" style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>
               <strong>Address:</strong> {patient.address || 'N/A'}
             </p>
-            <p className="mb-2" style={{ fontSize: '1rem', lineHeight: '1.6' }}>
+            <p className="mb-2" style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>
               <strong>Blood Group:</strong> {patient.blood_group || 'N/A'}
             </p>
-            <p className="mb-2" style={{ fontSize: '1rem', lineHeight: '1.6' }}>
+            <p className="mb-2" style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>
               <strong>Date of Birth:</strong> {patient.date_of_birth || 'N/A'}
             </p>
-            <p className="mb-2" style={{ fontSize: '1rem', lineHeight: '1.6' }}>
+            <p className="mb-2" style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>
               <strong>Email:</strong> {patient.email || 'N/A'}
             </p>
-            <p className="mb-2" style={{ fontSize: '1rem', lineHeight: '1.6' }}>
+            <p className="mb-2" style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>
               <strong>Father's Name:</strong> {patient.father_name || 'N/A'}
             </p>
-            <p className="mb-2" style={{ fontSize: '1rem', lineHeight: '1.6' }}>
+            <p className="mb-2" style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>
               <strong>Gender:</strong> {patient.gender || 'N/A'}
             </p>
-            <p
-              className="mb-4"
-              style={{ fontSize: '1rem', lineHeight: '1.6', wordWrap: 'break-word' }}
-            >
-              <strong>Phone:</strong> {patient.phone || 'N/A'}
-            </p>
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between mt-3">
               <button
                 className="btn fw-medium px-4 py-2 rounded-pill"
                 onClick={handleCreateEhr}
